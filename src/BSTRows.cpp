@@ -22,16 +22,88 @@ Note : Return -1 for Invalid Cases .
 
 #include <stdlib.h>
 #include <stdio.h>
-
 struct node{
 	struct node * left;
 	int data;
 	struct node *right;
 };
-
-
-
-int* BSTRighttoLeftRows(struct node* root)
+typedef struct node bstree;
+struct queuenode
 {
-    return NULL;
+	bstree *d;
+	struct queuenode *next;
+};
+
+struct queuenode* makequeue()
+{
+	struct queuenode* q;
+	q = (struct queuenode*)malloc(sizeof(struct queuenode));
+	q->d = NULL;
+	q->next = NULL;
+	return q;
 }
+
+void enqueue(struct queuenode * q, struct node *e)
+{
+	struct queuenode * p = q, *r;
+	while (p->next != NULL)
+		p = p->next;
+	r = makequeue();
+	r->d = e;
+	p->next = r;
+}
+
+struct node * dequeue(struct queuenode * q){
+	struct queuenode *p = q, *r;
+	struct node *e = q->next->d;
+	r = p->next;
+	p->next = r->next;
+	free(r);
+	return e;
+}
+
+int empty(struct queuenode * q)
+{
+	if (q->next == NULL)
+		return 1;
+	return 0;
+}
+int get_no_of_nodes(struct node *root)
+{
+	if (root == NULL)
+		return 0;
+	else
+		return 1 + get_no_of_nodes(root->left) + get_no_of_nodes(root->right);
+}
+int * printLevel(struct node* root)
+{
+	struct queuenode *queue = makequeue();
+	enqueue(queue, root);
+	int *result = (int *)malloc(sizeof(int)*get_no_of_nodes(root));
+	int index = 0;
+	while (!empty(queue))
+	{
+		struct node *temp = dequeue(queue);
+
+		result[index++] = temp->data;
+		if (temp->right){
+			enqueue(queue, temp->right);
+		}
+		if (temp->left){
+			enqueue(queue, temp->left);
+		}
+	}
+	return result;
+}
+
+int * BSTRighttoLeftRows(struct node* root)
+{
+	if (root == NULL)
+		return NULL;
+	int index = 0;
+	int *arr;
+	arr = printLevel(root);
+	return arr;
+}
+
+
